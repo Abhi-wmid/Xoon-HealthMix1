@@ -109,188 +109,7 @@ themeButton.addEventListener('click', () => {
 // })
 
 /*==================== for cart function ====================*/
-document.addEventListener('DOMContentLoaded', function () {
-    const cart = {
-        items: [],
-        addItem(item) {
-            const existingItem = this.items.find(cartItem => cartItem.name === item.name);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                item.quantity = 1;
-                this.items.push(item);
-            }
-            this.save();
-            updateCartCounter();
-            console.log("Item added to cart:", item);
-        },
-        removeItem(itemName) {
-            this.items = this.items.filter(cartItem => cartItem.name !== itemName);
-            this.save();
-            updateCartCounter();
-            populateCartModal();
-            console.log("Item removed from cart:", itemName);
-        },
-        updateQuantity(itemName, change) {
-            const item = this.items.find(cartItem => cartItem.name === itemName);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity <= 0) {
-                    this.removeItem(itemName);
-                } else {
-                    this.save();
-                    populateCartModal();
-                }
-                console.log("Item quantity updated:", item);
-            }
-        },
-        save() {
-            localStorage.setItem('cart', this.items.map(item => `${item.name},${item.detail},${item.price},${item.imgSrc},${item.quantity}`).join('|'));
-        },
-        load() {
-            const savedCart = localStorage.getItem('cart');
-            if (savedCart) {
-                this.items = savedCart.split('|').map(itemStr => {
-                    const [name, detail, price, imgSrc, quantity] = itemStr.split(',');
-                    return { name, detail, price, imgSrc, quantity: parseInt(quantity) };
-                });
-            }
-        },
-        getTotalQuantity() {
-            return this.items.reduce((total, item) => total + item.quantity, 0);
-        },
-        getTotalPrice() {
-            return this.items.reduce((total, item) => total + (parseFloat(item.price.replace('₹', '')) * item.quantity), 0);
-        }
-    };
 
-    function updateCartCounter() {
-        const cartCounter = document.getElementById('cart-counter');
-        cartCounter.textContent = cart.getTotalQuantity();
-        console.log("Cart counter updated:", cart.getTotalQuantity());
-    }
-
-    function populateCartModal() {
-        const cartItemsContainer = document.getElementById('cart-items');
-        const totalItemsElement = document.getElementById('total-items');
-        const totalPriceElement = document.getElementById('total-price');
-        cartItemsContainer.innerHTML = ''; 
-
-        for (const item of cart.items) {
-            const priceInRupees = parseFloat(item.price.replace('₹', '')) * item.quantity;
-
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'cart-item';
-            itemDiv.innerHTML = `
-                <img src="${item.imgSrc}" alt="${item.name}" class="cart-item-img">
-                <div class="cart-item-details">
-                    <h4 class="cart-item-name">${item.name}</h4>
-                    <p class="cart-item-detail">${item.detail}</p>
-                </div>
-                <div class="cart-item-quantity">
-                    <button class="quantity-decrease">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="quantity-increase">+</button>
-                </div>
-                <p class="cart-item-price">₹${priceInRupees.toFixed(2)}</p>
-                <button class="cart-item-remove">Remove</button>
-            `;
-
-            cartItemsContainer.appendChild(itemDiv);
-
-            itemDiv.querySelector('.quantity-decrease').addEventListener('click', () => cart.updateQuantity(item.name, -1));
-            itemDiv.querySelector('.quantity-increase').addEventListener('click', () => cart.updateQuantity(item.name, 1));
-            itemDiv.querySelector('.cart-item-remove').addEventListener('click', () => cart.removeItem(item.name));
-        }
-
-        totalItemsElement.textContent = cart.getTotalQuantity();
-        totalPriceElement.textContent = `₹${cart.getTotalPrice().toFixed(2)}`;
-        console.log("Cart modal populated with items:", cart.items);
-    }
-
-    // adding items
-    const buttons = document.querySelectorAll('.menu__button, .add-to-cart');
-    for (const button of buttons) {
-        button.addEventListener('click', function () {
-            const item = {
-                name: this.parentElement.querySelector('.menu__name').textContent,
-                detail: this.parentElement.querySelector('.menu__detail').textContent,
-                price: this.parentElement.querySelector('.menu__price').textContent,
-                imgSrc: this.parentElement.querySelector('.menu__img').src
-            };
-            cart.addItem(item);
-        });
-    }
-
-    // Update cart 
-    cart.load();
-    updateCartCounter();
-
-    // cart icon click
-    const cartIcon = document.getElementById('cart-icon');
-    const cartModal = document.getElementById('cart-modal');
-    const closeButton = document.querySelector('.close-button');
-
-    cartIcon.addEventListener('click', function () {
-        populateCartModal();
-        cartModal.style.display = 'block';
-    });
-
-    closeButton.addEventListener('click', function () {
-        cartModal.style.display = 'none';
-    });
-
-    // Close the modal when clicking outside of the modal content
-    window.addEventListener('click', function (event) {
-        if (event.target == cartModal) {
-            cartModal.style.display = 'none';
-        }
-    });
-
-    // Handle back to shopping button
-    const backToShoppingButton = document.getElementById('back-to-shopping');
-    backToShoppingButton.addEventListener('click', function () {
-        cartModal.style.display = 'none';
-    });
-
-    // Handle proceed to checkout button
-    const proceedToCheckoutButton = document.getElementById('proceed-to-checkout');
-    proceedToCheckoutButton.addEventListener('click', function () {
-        const address = document.getElementById('address').value.trim();
-        const pincode = document.getElementById('pincode').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-
-        if (!address || !pincode || !phone) {
-            alert('Please fill in all the required fields.');
-            return;
-        }
-
-        sendWhatsAppMessage();
-    });
-
-    // Function to send WhatsApp message with order details
-    function sendWhatsAppMessage() {
-        let orderDetails = '';
-        let totalPrice = 0;
-
-        for (const item of cart.items) {
-            const itemTotal = parseFloat(item.price.replace('₹', '')) * item.quantity;
-            orderDetails += `${item.name}: ${item.quantity} x ₹${item.price.replace('₹', '')} = ₹${itemTotal.toFixed(2)}\n`;
-            totalPrice += itemTotal;
-        }
-
-        const address = document.getElementById('address').value.trim();
-        const pincode = document.getElementById('pincode').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-
-        const message = `Order Details:\n${orderDetails}\nTotal Items: ${cart.items.length}\nTotal Price: ₹${totalPrice.toFixed(2)}\n\nAddress: ${address}\nPincode: ${pincode}\nPhone: ${phone}`;
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/919616366415?text=${encodedMessage}`;
-
-        console.log("Opening WhatsApp with URL:", whatsappURL);
-        window.open(whatsappURL, '_blank');
-    }
-});
 // *******************
 // **JS for Products**
 // *******************
@@ -436,23 +255,71 @@ function showTab(index) {
 }
 
  // Quantity update function 
- function newQuantity(change) {
+function newQuantity(change) {
     const quantityInput = document.getElementById('quantity');
     let currentValue = parseInt(quantityInput.value);
     currentValue += change;
     if (currentValue < 1) currentValue = 1;
     quantityInput.value = currentValue;
+    updatePrice(); // Update price when quantity changes
 }
 
+// Function to add item to cart (placeholder)
 function addToCart() {
-    console.log('Item added to cart');   
+    console.log('Item added to cart');
+    // Implement actual functionality to add item to cart here
 }
-function handleAddToCart() {
+
+// Function to handle "Add to Cart" action
+function handleAddToCart(event) {
+    event.preventDefault(); 
     const quantity = parseInt(document.getElementById('quantity').value);
+    const weight = document.getElementById('weight').value;
     for (let i = 0; i < quantity-1; i++) {
-        document.querySelector('.add-to-cart').click();
+        document.querySelector('.add-to-cart').click(); // Call addToCart function to actually add item to cart (placeholder)
+    }
+    console.log(`Added ${quantity} items of ${weight} weight to cart`);
+}
+
+// Function to update price based on weight selection
+function updatePrice() {
+    const weightSelect = document.getElementById('weight');
+    const selectedOption = weightSelect.options[weightSelect.selectedIndex];
+    const pricePerUnit = parseFloat(selectedOption.getAttribute('data-price'));
+    const discountPercentage = parseFloat(selectedOption.getAttribute('data-discount'));
+    const quantity = parseInt(document.getElementById('quantity').value);
+
+    const originalPrice = pricePerUnit * quantity;
+    const discountAmount = originalPrice * (discountPercentage / 100);
+    const finalPrice = originalPrice - discountAmount;
+
+    // Update displayed current price
+    document.getElementById('current-price').innerText = finalPrice.toFixed(2);
+    
+    // Update original price display if there's a discount
+    const originalPriceElement = document.getElementById('original-price');
+    if (discountAmount > 0) {
+        originalPriceElement.style.display = 'inline'; // Show original price
+        originalPriceElement.innerText = `₹${originalPrice.toFixed(2)}`;
+        originalPriceElement.style.textDecoration = 'line-through';
+        originalPriceElement.style.color = 'gray';
+    } else {
+        originalPriceElement.style.display = 'none'; // Hide original price
+    }
+
+    // Update discount display
+    const discountElement = document.querySelector('.discount');
+    if (discountAmount > 0) {
+        discountElement.style.display = 'block'; // Show discount info
+        document.getElementById('discount-amount').innerText = discountAmount.toFixed(2);
+    } else {
+        discountElement.style.display = 'none'; // Hide discount info
     }
 }
+
+// Initial price update on page load
+updatePrice();
+
 
 
 
