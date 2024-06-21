@@ -99,6 +99,8 @@
     </div>
 
 
+    
+    
     <section class="container1">
         <div class="product-image zoomable">
             <img class="zoomable__img" src="assets/img/sa 11-01.png" alt="">
@@ -111,7 +113,12 @@
                 <span>⭐ 4.3 | 86 Reviews</span>
             </div>
             <p class="Price1">Price</p>
-            <p class="menu__price">₹300 <span style="text-decoration: line-through; color: gray;">₹350</span> Inclusive of all Taxes</p>
+            <p class="menu__price">
+                ₹<span id="current-price">300</span>
+                <span id="original-price" style="display: none; text-decoration: line-through; color: gray;">₹305</span>
+                Inclusive of all Taxes
+            </p>
+            <p class="discount" style="color: green; display: none;">Discount Applied: ₹<span id="discount-amount">0</span></p>
             <div class="quantity">
                 <label for="quantity">Quantity</label>
                 <div class="quan">
@@ -120,14 +127,24 @@
                     <button onclick="newQuantity(1)">+</button>
                 </div>
             </div>
-            <a class="add-to-cart menu__button" data-item="Spinach Mix" data-quantity="1"  onclick="handleAddToCart(event)">Add to cart</a>
-           <div class="small-image">
+            <div class="weight">
+                <label for="weight">Weight</label>
+                <select id="weight" name="weight" onchange="updatePrice()">
+                    <option value="1" data-price="300" data-discount="0">100gm </option>
+                    <option value="2" data-price="600" data-discount="10">200gm (10% off)</option>
+                    <option value="2.5" data-price="750" data-discount="12">250gm (12% off)</option>
+                    <option value="5" data-price="1500" data-discount="15">500gm (15% off)</option>
+                    <!-- <option value="0.5" data-price="100" data-discount="0">500g</option> -->
+                </select>
+            </div>
+            <a class="add-to-cart menu__button" data-item="Spinach Mix" data-quantity="1" onclick="handleAddToCart(event)">Add to cart</a>
+    
+            <div class="small-image">
                 <img src="assets/img/sa 11-01.png" alt="Small Product Image">
                 <img src="assets/img/sa 11-01.png" alt="Small Product Image" class="menu__img no-display">
             </div>
         </div>
     </section>
-    
     
     
 

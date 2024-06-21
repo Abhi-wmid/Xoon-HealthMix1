@@ -106,12 +106,17 @@
         <div class="product-details">
             <h1>Health Mix Food</h1>
             <h3 class="menu__name">Horlicks Mix6</h3>
-            <span class="menu__detail">Chocolate 1kg</span>
+            <span class="menu__detail">Chocolate</span>
             <div class="rating">
                 <span>⭐ 4.4 | 86 Reviews</span>
             </div>
             <p class="Price1">Price</p>
-            <p class="menu__price">₹200 <span style="text-decoration: line-through; color: gray;">₹250</span> Inclusive of all Taxes</p>
+            <p class="menu__price">
+                ₹<span id="current-price">200</span>
+                <span id="original-price" style="display: none; text-decoration: line-through; color: gray;">₹205</span>
+                Inclusive of all Taxes
+            </p>
+            <p class="discount" style="color: green; display: none;">Discount Applied: ₹<span id="discount-amount">0</span></p>
             <div class="quantity">
                 <label for="quantity">Quantity</label>
                 <div class="quan">
@@ -120,14 +125,24 @@
                     <button onclick="newQuantity(1)">+</button>
                 </div>
             </div>
+            <div class="weight">
+                <label for="weight">Weight</label>
+                <select id="weight" name="weight" onchange="updatePrice()">
+                    <option value="1" data-price="200" data-discount="0">1kg </option>
+                    <option value="2" data-price="400" data-discount="10">2kg (10% off)</option>
+                    <option value="2.5" data-price="500" data-discount="12">2.5kg (12% off)</option>
+                    <option value="5" data-price="1000" data-discount="15">5kg (15% off)</option>
+                    <option value="0.5" data-price="100" data-discount="0">500g</option>
+                </select>
+            </div>
             <a class="add-to-cart menu__button" data-item="Horlicks Mix6" data-quantity="1" onclick="handleAddToCart(event)">Add to cart</a>
-       <div class="small-image">
+    
+            <div class="small-image">
                 <img src="assets/img/sa 11-01.png" alt="Small Product Image">
                 <img src="assets/img/sa 11-01.png" alt="Small Product Image" class="menu__img no-display">
             </div>
         </div>
     </section>
-    
     
     <section class="description">
         <h2>Description</h2>
